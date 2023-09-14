@@ -1,12 +1,28 @@
 cd ..
 git clone https://github.com/graphdeco-inria/gaussian-splatting --recursive gs
+git clone https://github.com/colmap/colmap
 
 sudo apt install -y libglew-dev libassimp-dev libboost-all-dev libgtk-3-dev libopencv-dev \
-	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev \
-	imagemagick
+	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev
 
-cd gs/SIBR_viewers
-cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release #-G Ninja
+sudo apt install imagemagick
+
+sudo apt-get install git cmake ninja-build build-essential libboost-program-options-dev \
+	libboost-filesystem-dev libboost-graph-dev libboost-system-dev libeigen3-dev libflann-dev \
+	libfreeimage-dev libmetis-dev libgoogle-glog-dev libgtest-dev libsqlite3-dev libglew-dev \
+	qtbase5-dev libqt5opengl5-dev libcgal-dev libceres-dev
+
+cd colmap
+rm -rf build
+mkdir build
+cd build
+cmake .. -G Ninja
+ninja
+sudo ninja install
+
+cd ../../gs/SIBR_viewers
+rm -rf build
+cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release -G Ninja
 cmake --build build -j --target install
 
 cd ../submodules/diff-gaussian-rasterization
