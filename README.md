@@ -6,6 +6,12 @@
 https://github.com/graphdeco-inria/gaussian-splatting
 ```
 
+## Requirements
+
+```bash
+COLMAP
+```
+
 ## Install
 
 ```bash
