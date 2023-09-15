@@ -6,6 +6,32 @@
 https://github.com/graphdeco-inria/gaussian-splatting
 ```
 
+## Install COLMAP
+
+```bash
+cd ..
+git clone https://github.com/colmap/colmap
+```
+
+and edit
+
+```bash
+if(CUDA_ENABLED AND CUDA_FOUND)
+```
+
+to
+
+```bash
+set(CMAKE_CUDA_ARCHITECTURES "86")
+if(CUDA_ENABLED AND CUDA_FOUND)
+```
+
+which is located near
+
+```bash
+colmap/cmake/FindDependencies.cmake:Line123
+```
+
 ## Install
 
 ```bash
