@@ -35,4 +35,4 @@ cd ../simple-knn
 pip install -e .
 
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install tqdm
+pip install tqdm plyfile
