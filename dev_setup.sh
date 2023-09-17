@@ -12,15 +12,18 @@ sudo apt-get install git cmake ninja-build build-essential libboost-program-opti
 	libfreeimage-dev libmetis-dev libgoogle-glog-dev libgtest-dev libsqlite3-dev libglew-dev \
 	qtbase5-dev libqt5opengl5-dev libcgal-dev libceres-dev
 
-cd colmap
-rm -rf build
-mkdir build
-cd build
-cmake .. -G Ninja
-ninja
-sudo ninja install
+if [! -d "/usr/local/bin/colmap"]; then
+	cd colmap
+	rm -rf build
+	mkdir build
+	cd build
+	cmake .. -G Ninja
+	ninja
+	sudo ninja install
+	cd ../..
+fi
 
-cd ../../gs/SIBR_viewers
+cd gs/SIBR_viewers
 rm -rf build
 cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release -G Ninja
 cmake --build build -j --target install
