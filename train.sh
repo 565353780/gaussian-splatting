@@ -3,7 +3,7 @@ cd ../gs
 rm -rf ./output/test0
 
 python train.py \
-	--source_path /home/chli/chLi/NeRF/3vjia_person_gs/ \
+	--source_path /home/chli/chLi/Dataset/NeRF/3vjia_simple/ \
 	--model_path ./output/test0/ \
 	--images images \
 	--resolution 1 \
