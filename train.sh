@@ -1,7 +1,9 @@
 cd ../gs
 
+rm -rf ./output/test0
+
 python train.py \
-	--source_path /home/chli/chLi/NeRF/ustc_niu_black_bg/ \
+	--source_path /home/chli/chLi/NeRF/3vjia_person_gs/ \
 	--model_path ./output/test0/ \
 	--images images \
 	--resolution 1 \

@@ -1,4 +1,5 @@
 cd ../gs
 
 python convert.py \
-	-s <location >[--resize]
+	-s /home/chli/chLi/NeRF/3vjia_person_gs/ \
+	--camera OPENCV
