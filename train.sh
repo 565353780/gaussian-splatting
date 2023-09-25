@@ -3,7 +3,7 @@ cd ../gs
 rm -rf ./output/test0
 
 python train.py \
-	--source_path ../colmap-manage/output/3vjia_simple/ \
+	--source_path ../colmap-manage/output/3vjia_simple/gs/ \
 	--model_path ./output/test0/ \
 	--images images \
 	--resolution 1 \
