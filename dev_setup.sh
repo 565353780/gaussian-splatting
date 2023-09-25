@@ -1,27 +1,13 @@
 cd ..
+git clone git@github.com:565353780/colmap-manage.git
 git clone https://github.com/graphdeco-inria/gaussian-splatting --recursive gs
-git clone https://github.com/colmap/colmap
 
 sudo apt install -y libglew-dev libassimp-dev libboost-all-dev libgtk-3-dev libopencv-dev \
 	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev
-
 sudo apt install imagemagick
 
-sudo apt-get install git cmake ninja-build build-essential libboost-program-options-dev \
-	libboost-filesystem-dev libboost-graph-dev libboost-system-dev libeigen3-dev libflann-dev \
-	libfreeimage-dev libmetis-dev libgoogle-glog-dev libgtest-dev libsqlite3-dev libglew-dev \
-	qtbase5-dev libqt5opengl5-dev libcgal-dev libceres-dev
-
-if [! -d "/usr/local/bin/colmap"]; then
-	cd colmap
-	rm -rf build
-	mkdir build
-	cd build
-	cmake .. -DCMAKE_CUDA_ARCHITECTURES=86 -G Ninja
-	ninja
-	sudo ninja install
-	cd ../..
-fi
+cd colmap-manage
+./dev_setup.sh
 
 cd gs/SIBR_viewers
 rm -rf build
