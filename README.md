@@ -17,7 +17,8 @@ conda activate gs
 ## Run
 
 ```bash
-./run.sh
+python convert.py
+./train.sh
 ```
 
 ## Enjoy it~
