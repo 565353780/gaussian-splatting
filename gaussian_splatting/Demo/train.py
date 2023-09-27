@@ -2,7 +2,7 @@ from gaussian_splatting.Method.train import trainGS
 
 def demo():
     dataset_folder_path = '../colmap-manage/output/3vjia_simple/gs/'
-    output_folder_path = '../gaussian_splatting/output/test0/'
+    output_folder_path = '../gaussian-splatting/output/3vjia_simple/'
     image_folder_name = 'images'
     resolution = 1
     device = 'cuda'
