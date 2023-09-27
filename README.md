@@ -4,7 +4,7 @@
 
 ```bash
 gcc-12 & g++-12
-cuda-12.2
+cuda-11.8
 ```
 
 ## Source
