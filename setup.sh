@@ -6,6 +6,9 @@ sudo apt install -y libglew-dev libassimp-dev libboost-all-dev libgtk-3-dev libo
 	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev
 sudo apt install imagemagick
 
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install tqdm plyfile
+
 cd colmap-manage
 ./setup.sh
 
@@ -19,6 +22,3 @@ pip install -e .
 
 cd ../simple-knn
 pip install -e .
-
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install tqdm plyfile
