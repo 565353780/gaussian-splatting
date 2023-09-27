@@ -18,7 +18,8 @@ conda activate gs
 
 ```bash
 python convert.py
-./train.sh
+python demo.py
+python render.py
 ```
 
 ## Enjoy it~
