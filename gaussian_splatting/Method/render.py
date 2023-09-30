@@ -53,7 +53,8 @@ def renderGSResult(output_folder_path, iteration=None):
 
         iteration_idx_list.sort()
 
-        iteration_folder_path = iteration_root_folder_path + 'iteration_' + str(iteration_idx_list[-1]) + '/'
+        iteration = iteration_idx_list[-1]
+        iteration_folder_path = iteration_root_folder_path + 'iteration_' + str(iteration) + '/'
     else:
         iteration_folder_path = output_folder_path + 'point_cloud/iteration_' + str(iteration)
 
