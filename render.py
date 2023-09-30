@@ -1,4 +1,6 @@
-from gaussian_splatting.Demo.render import demo as demo_render
+from gaussian_splatting.Method.render import renderTrainGS
 
-if __name__ == "__main__":
-    demo_render()
+output_folder_path = '../gaussian-splatting/output/PolyTech_fine/'
+port = 6006
+
+renderTrainGS(output_folder_path, port)

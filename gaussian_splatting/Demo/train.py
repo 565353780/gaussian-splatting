@@ -1,8 +1,8 @@
 from gaussian_splatting.Method.train import trainGS
 
 def demo():
-    dataset_folder_path = '../colmap-manage/output/3vjia_simple/gs/'
-    output_folder_path = '../gaussian-splatting/output/3vjia_simple/'
+    dataset_folder_path = '../colmap-manage/output/PolyTech_fine/gs/'
+    output_folder_path = '../gaussian-splatting/output/PolyTech_fine/'
     image_folder_name = 'images'
     resolution = 1
     device = 'cuda'
