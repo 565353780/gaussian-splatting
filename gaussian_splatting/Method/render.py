@@ -63,6 +63,10 @@ def renderGSResult(output_folder_path, iteration=None):
         print('\t iteration_folder_path:', iteration_folder_path)
         return False
 
+    print('[INFO][render::renderGSResult]')
+    print('\t start render result...')
+    print('\t data loaded from:', iteration_folder_path)
+
     cmd = '../gs/SIBR_viewers/install/bin/SIBR_gaussianViewer_app' + \
 	    ' --model-path ' + output_folder_path + \
         ' --iteration ' + str(iteration)
