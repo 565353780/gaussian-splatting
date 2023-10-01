@@ -26,7 +26,21 @@ conda activate gs
 ```bash
 python convert.py
 python demo.py
-python render.py
+```
+
+and see log via
+
+```bash
+tensorboard --logdir ./output --host 0.0.0.0
+```
+
+## Visualization
+
+choose and edit the script to see the corresponding results
+
+```bash
+python render_train.py
+python render_result.py
 ```
 
 ## Enjoy it~
