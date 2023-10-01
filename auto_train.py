@@ -5,7 +5,7 @@ from colmap_manage.Module.colmap_manager import COLMAPManager
 from colmap_manage.Module.dataset_manager import DatasetManager
 from gaussian_splatting.Method.train import trainGS
 
-data_folder_name = 'UrbanScene3D/PolyTech_fine_zhang'
+data_folder_name = 'NeRF/3vjia_simple'
 video_file_path = 'None'
 down_sample_scale = 4
 resolution = 8
