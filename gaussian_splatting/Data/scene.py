@@ -1,14 +1,13 @@
 import os
 import json
 import random
-from arguments import ModelParams
 
 from camera_manage.Method.colmap.scene import readColmapSceneInfo
 
+from gaussian_splatting.Config.params import ModelParams
 from gaussian_splatting.Model.gaussians import GaussianModel
 from gaussian_splatting.Method.path import searchForMaxIteration
 from gaussian_splatting.Method.camera import cameraList_from_camInfos, camera_to_JSON
-
 
 class Scene:
 
