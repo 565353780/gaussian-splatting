@@ -14,7 +14,7 @@ def trainGS(dataset_folder_path,
             print('\t cmd:', cmd)
             return False
 
-    cmd = 'cd ../gs && python train.py' + \
+    cmd = 'python ./gaussian_splatting/Module/trainer.py' + \
         ' --source_path ' + dataset_folder_path + \
         ' --model_path ' + output_folder_path + \
         ' --images ' + image_folder_name + \

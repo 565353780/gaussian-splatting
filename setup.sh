@@ -22,3 +22,5 @@ pip install -e .
 
 cd ../simple-knn
 pip install -e .
+
+pip install tensorboard
