@@ -14,7 +14,8 @@ from gaussian_splatting.Method.train import prepare_output_and_logger, training_
 import gaussian_splatting.Method.network as network_gui
 
 class Trainer(object):
-    def __init__(self) -> None:
+    def __init__(self, source_path=None, model_path=None, resolution=None, iterations=None,
+                 port=None, percent_dense=None):
         self.source_path = TRAIN_CONFIG['dataset_folder_path']
         self.model_path = TRAIN_CONFIG['output_folder_path']
         self.iterations = TRAIN_CONFIG['iterations']
@@ -29,6 +30,19 @@ class Trainer(object):
         self.checkpoint_iterations = TRAIN_CONFIG['checkpoint_iterations']
         self.quiet = TRAIN_CONFIG['quiet']
         self.start_checkpoint = TRAIN_CONFIG['start_checkpoint']
+
+        if source_path is not None:
+            self.source_path = source_path
+        if model_path is not None:
+            self.model_path = model_path
+        if resolution is not None:
+            self.resolution = resolution
+        if iterations is not None:
+            self.iterations = iterations
+        if port is not None:
+            self.port = port
+        if percent_dense is not None:
+            self.percent_dense = percent_dense
 
         # Params
         self.lp = ModelParams()
@@ -64,10 +78,22 @@ class Trainer(object):
         torch.autograd.set_detect_anomaly(self.detect_anomaly)
         return
 
-    def keepServer(self):
+    def keepServerAlive(self, iteration):
         if network_gui.conn == None:
             network_gui.try_connect()
 
+        while network_gui.conn != None:
+            try:
+                net_image_bytes = None
+                custom_cam, do_training, self.pp.convert_SHs_python, self.pp.compute_cov3D_python, keep_alive, scaling_modifer = network_gui.receive()
+                if custom_cam != None:
+                    net_image = render(custom_cam, self.gaussians, self.pp, self.background, scaling_modifer)["render"]
+                    net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy())
+                network_gui.send(net_image_bytes, self.lp.source_path)
+                if do_training and ((iteration < int(self.op.iterations)) or not keep_alive):
+                    break
+            except Exception as e:
+                network_gui.conn = None
         return True
 
     def loadModel(self, model_file_path):
@@ -81,8 +107,17 @@ class Trainer(object):
         self.gaussians.restore(model_params, self.op)
         return True
 
-    def trainStep(self):
-        return True
+    def trainStep(self, viewpoint_cam):
+        # Render
+        render_pkg = render(viewpoint_cam, self.gaussians, self.pp, self.background)
+        image = render_pkg["render"]
+
+        # Loss
+        gt_image = viewpoint_cam.original_image.cuda()
+        Ll1 = l1_loss(image, gt_image)
+        loss = (1.0 - self.op.lambda_dssim) * Ll1 + self.op.lambda_dssim * (1.0 - ssim(image, gt_image))
+        loss.backward()
+        return Ll1, loss, render_pkg
 
     def train(self):
         if self.start_checkpoint:
@@ -98,20 +133,7 @@ class Trainer(object):
 
         self.first_iter += 1
         for iteration in range(self.first_iter, self.op.iterations + 1):
-            self.keepServer()
-
-            while network_gui.conn != None:
-                try:
-                    net_image_bytes = None
-                    custom_cam, do_training, self.pp.convert_SHs_python, self.pp.compute_cov3D_python, keep_alive, scaling_modifer = network_gui.receive()
-                    if custom_cam != None:
-                        net_image = render(custom_cam, self.gaussians, self.pp, self.background, scaling_modifer)["render"]
-                        net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy())
-                    network_gui.send(net_image_bytes, self.lp.source_path)
-                    if do_training and ((iteration < int(self.op.iterations)) or not keep_alive):
-                        break
-                except Exception as e:
-                    network_gui.conn = None
+            self.keepServerAlive(iteration)
 
             iter_start.record()
 
@@ -126,15 +148,9 @@ class Trainer(object):
                 viewpoint_stack = self.scene.getTrainCameras().copy()
             viewpoint_cam = viewpoint_stack.pop(randint(0, len(viewpoint_stack)-1))
 
-            # Render
-            render_pkg = render(viewpoint_cam, self.gaussians, self.pp, self.background)
-            image, viewspace_point_tensor, visibility_filter, radii = render_pkg["render"], render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
+            Ll1, loss, render_pkg = self.trainStep(viewpoint_cam)
 
-            # Loss
-            gt_image = viewpoint_cam.original_image.cuda()
-            Ll1 = l1_loss(image, gt_image)
-            loss = (1.0 - self.op.lambda_dssim) * Ll1 + self.op.lambda_dssim * (1.0 - ssim(image, gt_image))
-            loss.backward()
+            viewspace_point_tensor, visibility_filter, radii = render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
 
             iter_end.record()
 
@@ -150,7 +166,7 @@ class Trainer(object):
                 # Log and save
                 training_report(self.tb_writer, iteration, Ll1, loss, l1_loss, iter_start.elapsed_time(iter_end), self.test_iterations, self.scene, render, (self.pp, self.background))
                 if (iteration in self.save_iterations):
-                    print("\n[ITER {}] Saving self.gaussians".format(iteration))
+                    print("\n[ITER {}] Saving gaussians".format(iteration))
                     self.scene.save(iteration)
 
                 # Densification
