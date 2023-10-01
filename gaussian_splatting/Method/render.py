@@ -15,7 +15,7 @@ def renderTrainGS(output_folder_path, port=6006):
         print('\t output_folder_path:', output_folder_path)
         return False
 
-    cmd = '../gs/SIBR_viewers/install/bin/SIBR_remoteGaussian_app' + \
+    cmd = '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_remoteGaussian_app' + \
         ' --port ' + str(port) + \
         ' --path ' + output_folder_path
 
