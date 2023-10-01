@@ -1,7 +1,3 @@
-import sys
-sys.path.append('../camera-manage/')
-sys.path.append('../gaussian-splatting/')
-
 import os
 import torch
 import sys
