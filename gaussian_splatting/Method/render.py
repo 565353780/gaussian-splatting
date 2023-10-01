@@ -17,7 +17,8 @@ def renderTrainGS(output_folder_path, port=6006):
 
     cmd = '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_remoteGaussian_app' + \
         ' --port ' + str(port) + \
-        ' --path ' + output_folder_path
+        ' --path ' + output_folder_path + \
+        ' --appPath ' + '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/'
 
     if not runCMD(cmd, True):
         print('[ERROR][render::renderTrainGS]')
@@ -77,7 +78,8 @@ def renderGSResult(output_folder_path, iteration=None):
 
     cmd = '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_gaussianViewer_app' + \
 	    ' --model-path ' + output_folder_path + \
-        ' --iteration ' + str(iteration)
+        ' --iteration ' + str(iteration) + \
+        ' --appPath ' + '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/'
 
     if not runCMD(cmd, True):
         print('[ERROR][render::renderGSResult]')

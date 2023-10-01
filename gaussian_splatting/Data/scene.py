@@ -31,7 +31,12 @@ class Scene:
         self.train_cameras = {}
         self.test_cameras = {}
 
-        assert os.path.exists(os.path.join(args.source_path, "sparse"))
+        if not os.path.exists(args.source_path + 'sparse/'):
+            print('[ERROR][scene::__init__]')
+            print('\t dataset not exist!')
+            print('\t source_path:', args.source_path + 'sparse/')
+            exit()
+
         scene_info = readColmapSceneInfo(args.source_path, args.images, args.eval)
 
         if not self.loaded_iter:
