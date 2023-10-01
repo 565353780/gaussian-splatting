@@ -240,6 +240,8 @@ namespace sibr
 
 	inline void		Window::bind(void) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		
 	}
 
 	inline void		Window::unbind(void) {

@@ -84,6 +84,7 @@ namespace sibr
 			if (!getDeltaTime<T>(current_tic, toc, deltaTime)) {
 				std::cout << "[SIBR - Timer] : below time reslution " << std::endl;
 			}
+
 			return deltaTime;
 		}
 

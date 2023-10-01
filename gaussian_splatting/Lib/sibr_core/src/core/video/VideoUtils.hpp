@@ -632,6 +632,7 @@ namespace sibr {
 
 		sibr::Volume3f current_v = vid.template convertTo<float>(), down, up;
 		for (int i = 0; i < (int)num_levels - 1; ++i) {
+			//std::cout << i << " " << current_v.l << std::endl;
 			down = current_v.pyrDownTemporal();
 			up = down.pyrUpTemporal(current_v.l);
 			//current_v.play(30, { 1200,800 });

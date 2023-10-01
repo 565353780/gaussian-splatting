@@ -665,6 +665,7 @@ namespace sibr
 		};
 
 		std::map<size_t, CameraParametersColmap> cameraParameters;
+
 		std::map<int, std::vector<std::string>> camidtokens;
 
 		while (safeGetline(camerasFile, line)) {
@@ -703,7 +704,6 @@ namespace sibr
 			0, 0, -1;
 
 		int camid = 0;
-
 		int valid = 0;
 		while (safeGetline(imagesFile, line)) {
 			if (line.empty() || line[0] == '#') {

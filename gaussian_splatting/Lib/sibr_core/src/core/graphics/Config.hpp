@@ -15,6 +15,7 @@
 # include "core/system/Config.hpp"
 # include "core/system/Utils.hpp"
 
+//#define GLEW_STATIC
 #include <GL/glew.h>
 
 # include <functional>

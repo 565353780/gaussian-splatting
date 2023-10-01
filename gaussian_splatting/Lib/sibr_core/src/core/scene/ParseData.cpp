@@ -193,6 +193,7 @@ namespace sibr {
 		}
 
 
+
 		scene_metadata.close();
 
 		return true;

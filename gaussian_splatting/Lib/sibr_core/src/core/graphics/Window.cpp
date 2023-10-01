@@ -256,6 +256,9 @@ namespace sibr
 	}
 
 	void Window::setup(int width, int height, const std::string& title, const WindowArgs & args, const std::string& defaultSettingsFilename) {
+		// IMPORTANT NOTE: if you got compatibility problem with old opengl function,
+		// try to load compat 3.2 instead of core 4.2
+
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
@@ -375,6 +378,15 @@ namespace sibr
 				ImGui::GetIO().FontGlobalScale = scaling();
 			}
 		}
+
+		/** \todo
+		TODO: fix issue on some HiDPI screens + interaction with GUI labels generation.
+		// If we have a screen in HiDPI mode, scale the interface accordingly.
+		if (_scaling > 1.0f) {
+			ImGui::GetStyle().ScaleAllSizes(_scaling);
+			ImGui::GetIO().FontGlobalScale = _scaling;
+		}
+		*/
 	}
 
 	Vector2i		Window::desktopSize( void )

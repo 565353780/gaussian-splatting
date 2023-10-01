@@ -16,12 +16,9 @@
 #include <sstream>
 #include <vector>
 #include "core/system/Utils.hpp"
-#ifdef USE_NFD
-#include <nfd.h>
-#endif
-
 
 #ifdef SIBR_OS_WINDOWS 
+	#include <nfd.h>
 	#include <Windows.h>
 	#include <shlobj.h>
 	#include <stdio.h>
@@ -30,6 +27,7 @@
 	#define ENABLE_VIRTUAL_TERMINAL_PROCESSING  0x0004
 	#endif
 #else
+	#include <nfd.h>
 	#include <libgen.h>
 	#include <linux/limits.h>
 	#include <unistd.h>
@@ -329,6 +327,7 @@ namespace sibr
 
 #ifdef SIBR_OS_WINDOWS 
 		unsigned int len = GetModuleFileNameA(GetModuleHandleA(0x0), exePath, MAX_PATH);
+
 		std::string installDirectory = parentDirectory(parentDirectory(exePath));
 #else
 		unsigned int len=0;
@@ -349,7 +348,7 @@ namespace sibr
 		if (len == 0 && 
 		!directoryExists(installDirectory + "/bin")) // memory not sufficient or general error occured
 		{
-			SIBR_ERR << "Can't find install folder " << installDirectory << " ! Please specify as command-line option using --appPath option!" << std::endl;
+			SIBR_ERR << "Can't find install folder! Please specify as command-line option using --appPath option!" << std::endl;
 		}
 		return installDirectory;
 	}
@@ -427,7 +426,7 @@ namespace sibr
 	bool showFilePicker(std::string & selectedElement,
 
 		const FilePickerMode mode, const std::string & directoryPath, const std::string & extensionsAllowed) {
-#ifdef USE_NFD
+
 		nfdchar_t *outPath = NULL;
 		nfdresult_t result = NFD_CANCEL;
 		
@@ -452,7 +451,6 @@ namespace sibr
 			std::cout << std::string(NFD_GetError()) << std::endl;
 		}
 		free(outPath);
-#endif
 
 		return false;
 

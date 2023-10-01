@@ -22,8 +22,13 @@ elseif (CMAKE_VERSION VERSION_GREATER CHECKED_VERSION)
 endif()
 
 ## Include cmake stuff (functions/macros) : Modules files
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+if(WIN32)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows/Modules)
+else()
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/linux)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/linux/Modules)
+endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ## To maintain cmake versions compatibilities
@@ -35,24 +40,55 @@ git_describe(GIT_BRANCH SIBR_CORE_BRANCH GIT_COMMIT_HASH SIBR_CORE_COMMIT_HASH G
 
 message(STATUS "SIBR version :\n BRANCH ${SIBR_CORE_BRANCH}\n COMMIT_HASH ${SIBR_CORE_COMMIT_HASH}\n TAG ${SIBR_CORE_TAG}\n VERSION ${SIBR_CORE_VERSION}")
 
+if(NOT WIN32)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
-## Allow C++11 + other flags
-include(CheckCXXCompilerFlag)
-get_filename_component(currentBuildTool ${CMAKE_BUILD_TOOL} NAME_WE)	# tool that can launch the native build system. returned value may be the full path
-if(${currentBuildTool} MATCHES "(msdev|devenv|nmake|MSBuild)")
 
-	add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/W3;/DNOMINMAX;/MP;-D_USE_MATH_DEFINES>")
-    #add_definitions(/W3 /DNOMINMAX /MP -D_USE_MATH_DEFINES)# /D_ITERATOR_DEBUG_LEVEL=1 because you need all external DLl to compile with this flag too
-    set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release;Debug" CACHE STRING "" FORCE)
-    set(CMAKE_CXX_STANDARD 14)
-	set(CMAKE_CXX_STANDARD_REQUIRED ON)
-	set(CMAKE_CXX_EXTENSIONS OFF)
-elseif(${currentBuildTool} MATCHES "(make|gmake|ninja)")
-	add_definitions("-fpermissive -fPIC -Wall -Wno-unknown-pragmas -Wno-sign-compare -g -std=c++17 -D__forceinline=\"inline\ __attribute__((always_inline))\"")
-elseif(APPLE) ## \todo TODO: do a better test and send error on unsupported c++14 compiler
-    add_definitions(-std=c++17 -stdlib=libc++)
+if (WIN32)
+	## Allow C++11 + other flags
+	include(CheckCXXCompilerFlag)
+	get_filename_component(currentBuildTool ${CMAKE_BUILD_TOOL} NAME_WE)	# tool that can launch the native build system. returned value may be the full path
+	if(${currentBuildTool} MATCHES "(msdev|devenv|nmake|MSBuild)")
+
+		add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/W3;/DNOMINMAX;/MP;-D_USE_MATH_DEFINES>")
+	    #add_definitions(/W3 /DNOMINMAX /MP -D_USE_MATH_DEFINES)# /D_ITERATOR_DEBUG_LEVEL=1 because you need all external DLl to compile with this flag too
+	    set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release;Debug" CACHE STRING "" FORCE)
+	    set(CMAKE_CXX_STANDARD 14)
+		set(CMAKE_CXX_STANDARD_REQUIRED ON)
+		set(CMAKE_CXX_EXTENSIONS OFF)
+	elseif(${currentBuildTool} MATCHES "(make|gmake)")
+	    add_definitions("-Wall -Wno-unknown-pragmas -Wno-sign-compare -g -std=c++14 -D__forceinline=\"inline\ __attribute__((always_inline))\"")
+		# CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
+		# CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" COMPILER_SUPPORTS_CXX0X)
+		# if(COMPILER_SUPPORTS_CXX11)
+		# 	add_definitions(-std=gnu++11)
+		# elseif(COMPILER_SUPPORTS_CXX0X)
+		# 	add_definitions(-std=gnu++0x)
+		# else()
+		# 	message(SEND_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
+		# endif()
+	elseif(APPLE) ## \todo TODO: do a better test and send error on unsupported c++14 compiler
+	    add_definitions(-std=c++14 -stdlib=libc++)
+	endif()
+else()
+	## Allow C++11 + other flags
+	include(CheckCXXCompilerFlag)
+	get_filename_component(currentBuildTool ${CMAKE_BUILD_TOOL} NAME_WE)	# tool that can launch the native build system. returned value may be the full path
+	if(${currentBuildTool} MATCHES "(msdev|devenv|nmake|MSBuild)")
+
+		add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/W3;/DNOMINMAX;/MP;-D_USE_MATH_DEFINES>")
+	    #add_definitions(/W3 /DNOMINMAX /MP -D_USE_MATH_DEFINES)# /D_ITERATOR_DEBUG_LEVEL=1 because you need all external DLl to compile with this flag too
+	    set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release;Debug" CACHE STRING "" FORCE)
+	    set(CMAKE_CXX_STANDARD 14)
+		set(CMAKE_CXX_STANDARD_REQUIRED ON)
+		set(CMAKE_CXX_EXTENSIONS OFF)
+	elseif(${currentBuildTool} MATCHES "(make|gmake|ninja)")
+		add_definitions("-fpermissive -fPIC -Wall -Wno-unknown-pragmas -Wno-sign-compare -g -std=c++17 -D__forceinline=\"inline\ __attribute__((always_inline))\"")
+	elseif(APPLE) ## \todo TODO: do a better test and send error on unsupported c++14 compiler
+	    add_definitions(-std=c++17 -stdlib=libc++)
+	endif()
 endif()
 
 set(INSTALL_STANDALONE ON)
@@ -172,4 +208,6 @@ ADD_SUBDIRECTORY(src)
 
 
 ## handle documentation
-#ADD_SUBDIRECTORY(docs)
+if (WIN32)
+ADD_SUBDIRECTORY(docs)
+endif()

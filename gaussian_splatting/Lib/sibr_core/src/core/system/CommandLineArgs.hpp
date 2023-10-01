@@ -536,5 +536,5 @@ namespace sibr
 			return res + ")";
 		}
 	};
-} // namespace sibr
 
+} // namespace sibr

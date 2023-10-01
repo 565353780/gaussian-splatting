@@ -41,7 +41,6 @@ namespace sibr
 		global.args.clear();
 
 		global.args["app_path"] = { std::string(argv[0])};
-std::cerr <<"PRINT app args: " <<  std::string(argv[0]) << std::endl;
 
 		std::string current_arg;
 		for (int i = 1; i < argc; ++i) {
@@ -85,6 +84,7 @@ std::cerr <<"PRINT app args: " <<  std::string(argv[0]) << std::endl;
 		}
 	}
 
+
 	void CommandLineArgs::displayHelp() const {
 		// Find the maximum length.
 		size_t maxLength = 0;
@@ -95,10 +95,25 @@ std::cerr <<"PRINT app args: " <<  std::string(argv[0]) << std::endl;
 		const Path path = args.at("app_path")[0];
 		SIBR_LOG << "Help for " << path.filename().string() << ":" << std::endl;
 		for(const auto & command : commands) {
-			std::cout << "\t" << "--" << command.first;
 			// Pad to align everything.
+#ifdef WIN32 // green
+			std::string req = "[required]";
+			std::string sec = command.second, xx;
+			bool tgreen = false;
+			if(sec.substr(sec.size()-req.size(), req.size()+1) == req) {
+				setupConsole();
+				printf("\x1b[32m");
+				tgreen = true;
+			}
+#endif
+			std::cout << "\t" << "--" << command.first;
 			std::cout << std::string(int(maxLength) - command.first.size() + 1, ' ');
 			std::cout << command.second << std::endl;
+
+#ifdef WIN32
+			if( tgreen )
+				restoreConsole();
+#endif
 		}
 		std::cout << std::endl;
 	}
@@ -131,5 +146,5 @@ std::cerr <<"PRINT app args: " <<  std::string(argv[0]) << std::endl;
 		}
 	}
 
-} // namespace sibr
+} // namespace sirb
 
