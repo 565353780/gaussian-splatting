@@ -107,6 +107,10 @@ class Trainer(object):
         self.gaussians.restore(model_params, self.op)
         return True
 
+    def saveModel(self, ply_file_path):
+        self.gaussians.save_ply(ply_file_path)
+        return True
+
     def trainStep(self, viewpoint_cam):
         # Render
         render_pkg = render(viewpoint_cam, self.gaussians, self.pp, self.background)

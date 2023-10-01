@@ -28,7 +28,8 @@ def training_report(tb_writer, iteration, Ll1, loss, l1_loss, elapsed, testing_i
     if tb_writer:
         tb_writer.add_scalar('train_loss_patches/l1_loss', Ll1.item(), iteration)
         tb_writer.add_scalar('train_loss_patches/total_loss', loss.item(), iteration)
-        tb_writer.add_scalar('iter_time', elapsed, iteration)
+        if elapsed is not None:
+            tb_writer.add_scalar('iter_time', elapsed, iteration)
 
     # Report test and samples of training set
     if iteration in testing_iterations:
