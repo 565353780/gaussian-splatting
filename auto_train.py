@@ -1,4 +1,5 @@
 import sys
+sys.path.append('../camera-manage/')
 sys.path.append('../colmap-manage/')
 
 from colmap_manage.Module.colmap_manager import COLMAPManager
