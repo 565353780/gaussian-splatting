@@ -1,35 +1,46 @@
 import os
-import torch
-from tqdm import tqdm
 from random import randint
 
-from gaussian_splatting.Config.params import ModelParams, PipelineParams, OptimizationParams
-from gaussian_splatting.Config.train import TRAIN_CONFIG
+import gaussian_splatting.Method.network as network_gui
+import torch
+from gaussian_splatting.Config.params import (
+    ModelParams,
+    OptimizationParams,
+    PipelineParams,
+)
+from gaussian_splatting.Config.train import getTrainConfig
+from gaussian_splatting.Data.scene import Scene
 from gaussian_splatting.Loss.loss import l1_loss, ssim
 from gaussian_splatting.Method.model import safe_state
-from gaussian_splatting.Model.gaussians import GaussianModel
-from gaussian_splatting.Data.scene import Scene
 from gaussian_splatting.Method.render import render
+from gaussian_splatting.Method.time import getCurrentTime
 from gaussian_splatting.Method.train import prepare_output_and_logger, training_report
-import gaussian_splatting.Method.network as network_gui
+from gaussian_splatting.Model.gaussians import GaussianModel
+from tqdm import tqdm
+
 
 class Trainer(object):
-    def __init__(self, source_path=None, model_path=None, resolution=None, iterations=None,
-                 port=None, percent_dense=None):
-        self.source_path = TRAIN_CONFIG['dataset_folder_path']
-        self.model_path = TRAIN_CONFIG['output_folder_path']
-        self.iterations = TRAIN_CONFIG['iterations']
-        self.resolution = TRAIN_CONFIG['resolution']
-        self.percent_dense = TRAIN_CONFIG['percent_dense']
-        self.ip = TRAIN_CONFIG['ip']
-        self.port = TRAIN_CONFIG['port']
+    def __init__(self, source_path=None, model_path=None, resolution=None,
+                 iterations=None, port=None, percent_dense=None, folder_name=None):
+        if folder_name is not None:
+            train_config = getTrainConfig(folder_name)
+        else:
+            train_config = getTrainConfig(getCurrentTime())
 
-        self.detect_anomaly = TRAIN_CONFIG['detect_anomaly']
-        self.test_iterations = TRAIN_CONFIG['test_iterations']
-        self.save_iterations = TRAIN_CONFIG['save_iterations']
-        self.checkpoint_iterations = TRAIN_CONFIG['checkpoint_iterations']
-        self.quiet = TRAIN_CONFIG['quiet']
-        self.start_checkpoint = TRAIN_CONFIG['start_checkpoint']
+        self.source_path = train_config['dataset_folder_path']
+        self.model_path = train_config['output_folder_path']
+        self.iterations = train_config['iterations']
+        self.resolution = train_config['resolution']
+        self.percent_dense = train_config['percent_dense']
+        self.ip = train_config['ip']
+        self.port = train_config['port']
+
+        self.detect_anomaly = train_config['detect_anomaly']
+        self.test_iterations = train_config['test_iterations']
+        self.save_iterations = train_config['save_iterations']
+        self.checkpoint_iterations = train_config['checkpoint_iterations']
+        self.quiet = train_config['quiet']
+        self.start_checkpoint = train_config['start_checkpoint']
 
         if source_path is not None:
             self.source_path = source_path
@@ -43,6 +54,8 @@ class Trainer(object):
             self.port = port
         if percent_dense is not None:
             self.percent_dense = percent_dense
+
+        os.makedirs(self.model_path, exist_ok=True)
 
         # Params
         self.lp = ModelParams()
@@ -79,20 +92,20 @@ class Trainer(object):
         return
 
     def keepServerAlive(self, iteration):
-        if network_gui.conn == None:
+        if network_gui.conn is None:
             network_gui.try_connect()
 
-        while network_gui.conn != None:
+        while network_gui.conn is not None:
             try:
                 net_image_bytes = None
                 custom_cam, do_training, self.pp.convert_SHs_python, self.pp.compute_cov3D_python, keep_alive, scaling_modifer = network_gui.receive()
-                if custom_cam != None:
+                if custom_cam is not None:
                     net_image = render(custom_cam, self.gaussians, self.pp, self.background, scaling_modifer)["render"]
                     net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy())
                 network_gui.send(net_image_bytes, self.lp.source_path)
                 if do_training and ((iteration < int(self.op.iterations)) or not keep_alive):
                     break
-            except Exception as e:
+            except Exception:
                 network_gui.conn = None
         return True
 
