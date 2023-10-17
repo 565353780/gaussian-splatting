@@ -14,7 +14,7 @@ resolution = 8
 
 scale = 1
 show_image = False
-print_progress = False
+print_progress = True
 remove_old = False
 remain_db = True
 valid_percentage = 0.8
