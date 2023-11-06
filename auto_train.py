@@ -8,10 +8,11 @@ from colmap_manage.Module.dataset_manager import DatasetManager
 from gaussian_splatting.Module.trainer import Trainer
 
 data_folder_name = "NeRF/3vjia_simple"
+data_folder_name = "NeRF/wine"
 # data_folder_name = "UrbanScene3D/PolyTech_fine_zhang"
 video_file_path = "/home/chli/chLi/Dataset/Video/wine.mp41"
 down_sample_scale = 4
-resolution = 8
+resolution = 1
 
 scale = 1
 show_image = False
