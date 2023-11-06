@@ -23,17 +23,13 @@ class Trainer(object):
     def __init__(
         self,
         source_path=None,
-        model_path=None,
+        folder_name=None,
         resolution=None,
         iterations=None,
         port=None,
         percent_dense=None,
-        folder_name=None,
     ):
-        if folder_name is not None:
-            train_config = getTrainConfig(folder_name)
-        else:
-            train_config = getTrainConfig(getCurrentTime())
+        train_config = getTrainConfig(folder_name, getCurrentTime())
 
         self.source_path = train_config["dataset_folder_path"]
         self.model_path = train_config["output_folder_path"]
@@ -52,8 +48,6 @@ class Trainer(object):
 
         if source_path is not None:
             self.source_path = source_path
-        if model_path is not None:
-            self.model_path = model_path
         if resolution is not None:
             self.resolution = resolution
         if iterations is not None:

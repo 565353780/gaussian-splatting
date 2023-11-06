@@ -16,12 +16,19 @@ TRAIN_CONFIG = {
 }
 
 
-def getTrainConfig(folder_name):
+def getTrainConfig(dataset_folder_name, log_folder_name):
     train_config = TRAIN_CONFIG
-    train_config["dataset_folder_path"] = train_config["dataset_folder_path"].replace(
-        "<folder-name>", folder_name
-    )
-    train_config["output_folder_path"] = train_config["output_folder_path"].replace(
-        "<folder-name>", folder_name
-    )
+    if dataset_folder_name is not None:
+        train_config["dataset_folder_path"] = train_config[
+            "dataset_folder_path"
+        ].replace("<folder-name>", dataset_folder_name)
+    if log_folder_name is not None:
+        if dataset_folder_name is not None:
+            train_config["output_folder_path"] = train_config[
+                "output_folder_path"
+            ].replace("<folder-name>", dataset_folder_name + "_" + log_folder_name)
+        else:
+            train_config["output_folder_path"] = train_config[
+                "output_folder_path"
+            ].replace("<folder-name>", log_folder_name)
     return train_config

@@ -44,7 +44,7 @@ DatasetManager().generateDataset(
 
 Trainer(
     dataset_folder_path + "gs/",
-    output_folder_path,
+    data_folder_name.replace("/", "_"),
     resolution,
     iterations,
     port,
