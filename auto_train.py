@@ -30,7 +30,7 @@ output_folder_path = (
 image_folder_name = "images"
 device = "cuda"
 iterations = 30000
-port = 6006
+port = 6007
 percentent_dense = 0.01
 
 COLMAPManager(

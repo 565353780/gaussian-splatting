@@ -2,44 +2,54 @@ import os
 import math
 import torch
 
-from diff_gaussian_rasterization import GaussianRasterizationSettings, GaussianRasterizer
+from diff_gaussian_rasterization import (
+    GaussianRasterizationSettings,
+    GaussianRasterizer,
+)
 
 from gaussian_splatting.Model.gaussians import GaussianModel
 from gaussian_splatting.Method.cmd import runCMD
 from gaussian_splatting.Method.color import eval_sh
 
-def renderTrainGS(output_folder_path, port=6006):
+
+def renderTrainGS(output_folder_path, port=6007):
     if not os.path.exists(output_folder_path):
-        print('[ERROR][render::renderTrainGS]')
-        print('\t output_folder not exist!')
-        print('\t output_folder_path:', output_folder_path)
+        print("[ERROR][render::renderTrainGS]")
+        print("\t output_folder not exist!")
+        print("\t output_folder_path:", output_folder_path)
         return False
 
-    cmd = '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_remoteGaussian_app' + \
-        ' --port ' + str(port) + \
-        ' --path ' + output_folder_path + \
-        ' --appPath ' + '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/'
+    cmd = (
+        "../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_remoteGaussian_app"
+        + " --port "
+        + str(port)
+        + " --path "
+        + output_folder_path
+        + " --appPath "
+        + "../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/"
+    )
 
     if not runCMD(cmd, True):
-        print('[ERROR][render::renderTrainGS]')
-        print('\t runCMD failed!')
-        print('\t cmd:', cmd)
+        print("[ERROR][render::renderTrainGS]")
+        print("\t runCMD failed!")
+        print("\t cmd:", cmd)
         return False
 
     return True
 
+
 def renderGSResult(output_folder_path, iteration=None):
     if not os.path.exists(output_folder_path):
-        print('[ERROR][render::renderGSResult]')
-        print('\t output_folder not exist!')
-        print('\t output_folder_path:', output_folder_path)
+        print("[ERROR][render::renderGSResult]")
+        print("\t output_folder not exist!")
+        print("\t output_folder_path:", output_folder_path)
         return False
 
-    iteration_root_folder_path = output_folder_path + 'point_cloud/'
+    iteration_root_folder_path = output_folder_path + "point_cloud/"
     if not os.path.exists(iteration_root_folder_path):
-        print('[ERROR][render::renderGSResult]')
-        print('\t iteration_root_folder not exist! please train and wait!')
-        print('\t iteration_root_folder_path:', iteration_root_folder_path)
+        print("[ERROR][render::renderGSResult]")
+        print("\t iteration_root_folder not exist! please train and wait!")
+        print("\t iteration_root_folder_path:", iteration_root_folder_path)
         return False
 
     if iteration is None:
@@ -48,56 +58,78 @@ def renderGSResult(output_folder_path, iteration=None):
         iteration_folder_name_list = os.listdir(iteration_root_folder_path)
 
         for iteration_folder_name in iteration_folder_name_list:
-            if iteration_folder_name[:10] != 'iteration_':
+            if iteration_folder_name[:10] != "iteration_":
                 continue
 
             iteration_idx_list.append(int(iteration_folder_name[10:]))
 
         if len(iteration_idx_list) == 0:
-            print('[ERROR][render::renderGSResult]')
-            print('\t iteration_folder not found! please train and wait!')
-            print('\t iteration_root_folder_path:', iteration_root_folder_path)
+            print("[ERROR][render::renderGSResult]")
+            print("\t iteration_folder not found! please train and wait!")
+            print("\t iteration_root_folder_path:", iteration_root_folder_path)
             return False
 
         iteration_idx_list.sort()
 
         iteration = iteration_idx_list[-1]
-        iteration_folder_path = iteration_root_folder_path + 'iteration_' + str(iteration) + '/'
+        iteration_folder_path = (
+            iteration_root_folder_path + "iteration_" + str(iteration) + "/"
+        )
     else:
-        iteration_folder_path = output_folder_path + 'point_cloud/iteration_' + str(iteration)
+        iteration_folder_path = (
+            output_folder_path + "point_cloud/iteration_" + str(iteration)
+        )
 
     if not os.path.exists(iteration_folder_path):
-        print('[ERROR][render::renderGSResult]')
-        print('\t iteration_folder not exist!')
-        print('\t iteration_folder_path:', iteration_folder_path)
+        print("[ERROR][render::renderGSResult]")
+        print("\t iteration_folder not exist!")
+        print("\t iteration_folder_path:", iteration_folder_path)
         return False
 
-    print('[INFO][render::renderGSResult]')
-    print('\t start render result...')
-    print('\t data loaded from:', iteration_folder_path)
+    print("[INFO][render::renderGSResult]")
+    print("\t start render result...")
+    print("\t data loaded from:", iteration_folder_path)
 
-    cmd = '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_gaussianViewer_app' + \
-	    ' --model-path ' + output_folder_path + \
-        ' --iteration ' + str(iteration) + \
-        ' --appPath ' + '../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/'
+    cmd = (
+        "../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/SIBR_gaussianViewer_app"
+        + " --model-path "
+        + output_folder_path
+        + " --iteration "
+        + str(iteration)
+        + " --appPath "
+        + "../gaussian-splatting/gaussian_splatting/Lib/sibr_core/install/bin/"
+    )
 
     if not runCMD(cmd, True):
-        print('[ERROR][render::renderGSResult]')
-        print('\t runCMD failed!')
-        print('\t cmd:', cmd)
+        print("[ERROR][render::renderGSResult]")
+        print("\t runCMD failed!")
+        print("\t cmd:", cmd)
         return False
 
     return True
 
-def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None):
+
+def render(
+    viewpoint_camera,
+    pc: GaussianModel,
+    pipe,
+    bg_color: torch.Tensor,
+    scaling_modifier=1.0,
+    override_color=None,
+):
     """
-    Render the scene. 
-    
+    Render the scene.
+
     Background tensor (bg_color) must be on GPU!
     """
- 
+
     # Create zero tensor. We will use it to make pytorch return gradients of the 2D (screen-space) means
-    screenspace_points = torch.zeros_like(pc.get_xyz, dtype=pc.get_xyz.dtype, requires_grad=True, device="cuda") + 0
+    screenspace_points = (
+        torch.zeros_like(
+            pc.get_xyz, dtype=pc.get_xyz.dtype, requires_grad=True, device="cuda"
+        )
+        + 0
+    )
     try:
         screenspace_points.retain_grad()
     except:
@@ -119,7 +151,7 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
         sh_degree=pc.active_sh_degree,
         campos=viewpoint_camera.camera_center,
         prefiltered=False,
-        debug=pipe.debug
+        debug=pipe.debug,
     )
 
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
@@ -145,9 +177,13 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     colors_precomp = None
     if override_color is None:
         if pipe.convert_SHs_python:
-            shs_view = pc.get_features.transpose(1, 2).view(-1, 3, (pc.max_sh_degree+1)**2)
-            dir_pp = (pc.get_xyz - viewpoint_camera.camera_center.repeat(pc.get_features.shape[0], 1))
-            dir_pp_normalized = dir_pp/dir_pp.norm(dim=1, keepdim=True)
+            shs_view = pc.get_features.transpose(1, 2).view(
+                -1, 3, (pc.max_sh_degree + 1) ** 2
+            )
+            dir_pp = pc.get_xyz - viewpoint_camera.camera_center.repeat(
+                pc.get_features.shape[0], 1
+            )
+            dir_pp_normalized = dir_pp / dir_pp.norm(dim=1, keepdim=True)
             sh2rgb = eval_sh(pc.active_sh_degree, shs_view, dir_pp_normalized)
             colors_precomp = torch.clamp_min(sh2rgb + 0.5, 0.0)
         else:
@@ -155,20 +191,23 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     else:
         colors_precomp = override_color
 
-    # Rasterize visible Gaussians to image, obtain their radii (on screen). 
+    # Rasterize visible Gaussians to image, obtain their radii (on screen).
     rendered_image, radii = rasterizer(
-        means3D = means3D,
-        means2D = means2D,
-        shs = shs,
-        colors_precomp = colors_precomp,
-        opacities = opacity,
-        scales = scales,
-        rotations = rotations,
-        cov3D_precomp = cov3D_precomp)
+        means3D=means3D,
+        means2D=means2D,
+        shs=shs,
+        colors_precomp=colors_precomp,
+        opacities=opacity,
+        scales=scales,
+        rotations=rotations,
+        cov3D_precomp=cov3D_precomp,
+    )
 
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.
-    return {"render": rendered_image,
-            "viewspace_points": screenspace_points,
-            "visibility_filter" : radii > 0,
-            "radii": radii}
+    return {
+        "render": rendered_image,
+        "viewspace_points": screenspace_points,
+        "visibility_filter": radii > 0,
+        "radii": radii,
+    }

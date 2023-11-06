@@ -9,6 +9,6 @@ data_folder_name = "NeRF/wine"
 output_folder_path = (
     "../gaussian-splatting/output/" + data_folder_name.replace("/", "_") + "/"
 )
-port = 6006
+port = 6007
 
 renderTrainGS(output_folder_path, port)
