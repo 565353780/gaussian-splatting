@@ -2,7 +2,7 @@ TRAIN_CONFIG = {
     "dataset_folder_path": "../colmap-manage/output/<folder-name>/gs/",
     "output_folder_path": "../gaussian-splatting/output/<folder-name>/",
     "start_checkpoint": None,
-    "iterations": 40000,
+    "iterations": 400000,
     "resolution": 8,
     "ip": "127.0.0.1",
     "port": 6007,
