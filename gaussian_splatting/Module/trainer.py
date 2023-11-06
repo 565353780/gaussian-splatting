@@ -20,27 +20,35 @@ from tqdm import tqdm
 
 
 class Trainer(object):
-    def __init__(self, source_path=None, model_path=None, resolution=None,
-                 iterations=None, port=None, percent_dense=None, folder_name=None):
+    def __init__(
+        self,
+        source_path=None,
+        model_path=None,
+        resolution=None,
+        iterations=None,
+        port=None,
+        percent_dense=None,
+        folder_name=None,
+    ):
         if folder_name is not None:
             train_config = getTrainConfig(folder_name)
         else:
             train_config = getTrainConfig(getCurrentTime())
 
-        self.source_path = train_config['dataset_folder_path']
-        self.model_path = train_config['output_folder_path']
-        self.iterations = train_config['iterations']
-        self.resolution = train_config['resolution']
-        self.percent_dense = train_config['percent_dense']
-        self.ip = train_config['ip']
-        self.port = train_config['port']
+        self.source_path = train_config["dataset_folder_path"]
+        self.model_path = train_config["output_folder_path"]
+        self.iterations = train_config["iterations"]
+        self.resolution = train_config["resolution"]
+        self.percent_dense = train_config["percent_dense"]
+        self.ip = train_config["ip"]
+        self.port = train_config["port"]
 
-        self.detect_anomaly = train_config['detect_anomaly']
-        self.test_iterations = train_config['test_iterations']
-        self.save_iterations = train_config['save_iterations']
-        self.checkpoint_iterations = train_config['checkpoint_iterations']
-        self.quiet = train_config['quiet']
-        self.start_checkpoint = train_config['start_checkpoint']
+        self.detect_anomaly = train_config["detect_anomaly"]
+        self.test_iterations = train_config["test_iterations"]
+        self.save_iterations = train_config["save_iterations"]
+        self.checkpoint_iterations = train_config["checkpoint_iterations"]
+        self.quiet = train_config["quiet"]
+        self.start_checkpoint = train_config["start_checkpoint"]
 
         if source_path is not None:
             self.source_path = source_path
@@ -98,12 +106,34 @@ class Trainer(object):
         while network_gui.conn is not None:
             try:
                 net_image_bytes = None
-                custom_cam, do_training, self.pp.convert_SHs_python, self.pp.compute_cov3D_python, keep_alive, scaling_modifer = network_gui.receive()
+                (
+                    custom_cam,
+                    do_training,
+                    self.pp.convert_SHs_python,
+                    self.pp.compute_cov3D_python,
+                    keep_alive,
+                    scaling_modifer,
+                ) = network_gui.receive()
                 if custom_cam is not None:
-                    net_image = render(custom_cam, self.gaussians, self.pp, self.background, scaling_modifer)["render"]
-                    net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy())
+                    net_image = render(
+                        custom_cam,
+                        self.gaussians,
+                        self.pp,
+                        self.background,
+                        scaling_modifer,
+                    )["render"]
+                    net_image_bytes = memoryview(
+                        (torch.clamp(net_image, min=0, max=1.0) * 255)
+                        .byte()
+                        .permute(1, 2, 0)
+                        .contiguous()
+                        .cpu()
+                        .numpy()
+                    )
                 network_gui.send(net_image_bytes, self.lp.source_path)
-                if do_training and ((iteration < int(self.op.iterations)) or not keep_alive):
+                if do_training and (
+                    (iteration < int(self.op.iterations)) or not keep_alive
+                ):
                     break
             except Exception:
                 network_gui.conn = None
@@ -111,9 +141,9 @@ class Trainer(object):
 
     def loadModel(self, model_file_path):
         if not os.path.exists(model_file_path):
-            print('[ERROR][Trainer::loadModel]')
-            print('\t model file not exist!')
-            print('\t model_file_path:', model_file_path)
+            print("[ERROR][Trainer::loadModel]")
+            print("\t model file not exist!")
+            print("\t model_file_path:", model_file_path)
             return False
 
         (model_params, self.first_iter) = torch.load(self.start_checkpoint)
@@ -132,7 +162,9 @@ class Trainer(object):
         # Loss
         gt_image = viewpoint_cam.original_image.cuda()
         Ll1 = l1_loss(image, gt_image)
-        loss = (1.0 - self.op.lambda_dssim) * Ll1 + self.op.lambda_dssim * (1.0 - ssim(image, gt_image))
+        loss = (1.0 - self.op.lambda_dssim) * Ll1 + self.op.lambda_dssim * (
+            1.0 - ssim(image, gt_image)
+        )
         loss.backward()
         return Ll1, loss, render_pkg
 
@@ -140,13 +172,15 @@ class Trainer(object):
         if self.start_checkpoint:
             self.loadModel(self.start_checkpoint)
 
-        iter_start = torch.cuda.Event(enable_timing = True)
-        iter_end = torch.cuda.Event(enable_timing = True)
+        iter_start = torch.cuda.Event(enable_timing=True)
+        iter_end = torch.cuda.Event(enable_timing=True)
 
         viewpoint_stack = None
         ema_loss_for_log = 0.0
 
-        progress_bar = tqdm(range(self.first_iter, self.op.iterations), desc="Training progress")
+        progress_bar = tqdm(
+            range(self.first_iter, self.op.iterations), desc="Training progress"
+        )
 
         self.first_iter += 1
         for iteration in range(self.first_iter, self.op.iterations + 1):
@@ -163,11 +197,15 @@ class Trainer(object):
             # Pick a random Camera
             if not viewpoint_stack:
                 viewpoint_stack = self.scene.getTrainCameras().copy()
-            viewpoint_cam = viewpoint_stack.pop(randint(0, len(viewpoint_stack)-1))
+            viewpoint_cam = viewpoint_stack.pop(randint(0, len(viewpoint_stack) - 1))
 
             Ll1, loss, render_pkg = self.trainStep(viewpoint_cam)
 
-            viewspace_point_tensor, visibility_filter, radii = render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
+            viewspace_point_tensor, visibility_filter, radii = (
+                render_pkg["viewspace_points"],
+                render_pkg["visibility_filter"],
+                render_pkg["radii"],
+            )
 
             iter_end.record()
 
@@ -181,30 +219,62 @@ class Trainer(object):
                     progress_bar.close()
 
                 # Log and save
-                training_report(self.tb_writer, iteration, Ll1, loss, l1_loss, iter_start.elapsed_time(iter_end), self.test_iterations, self.scene, render, (self.pp, self.background))
-                if (iteration in self.save_iterations):
+                training_report(
+                    self.tb_writer,
+                    iteration,
+                    Ll1,
+                    loss,
+                    l1_loss,
+                    iter_start.elapsed_time(iter_end),
+                    self.test_iterations,
+                    self.scene,
+                    render,
+                    (self.pp, self.background),
+                )
+                if iteration in self.save_iterations:
                     print("\n[ITER {}] Saving gaussians".format(iteration))
                     self.scene.save(iteration)
 
                 # Densification
                 if iteration < self.op.densify_until_iter:
                     # Keep track of max radii in image-space for pruning
-                    self.gaussians.max_radii2D[visibility_filter] = torch.max(self.gaussians.max_radii2D[visibility_filter], radii[visibility_filter])
-                    self.gaussians.add_densification_stats(viewspace_point_tensor, visibility_filter)
+                    self.gaussians.max_radii2D[visibility_filter] = torch.max(
+                        self.gaussians.max_radii2D[visibility_filter],
+                        radii[visibility_filter],
+                    )
+                    self.gaussians.add_densification_stats(
+                        viewspace_point_tensor, visibility_filter
+                    )
 
-                    if iteration > self.op.densify_from_iter and iteration % self.op.densification_interval == 0:
-                        size_threshold = 20 if iteration > self.op.opacity_reset_interval else None
-                        self.gaussians.densify_and_prune(self.op.densify_grad_threshold, 0.005, self.scene.cameras_extent, size_threshold)
-                    
-                    if iteration % self.op.opacity_reset_interval == 0 or (self.lp.white_background and iteration == self.op.densify_from_iter):
+                    if (
+                        iteration > self.op.densify_from_iter
+                        and iteration % self.op.densification_interval == 0
+                    ):
+                        size_threshold = (
+                            20 if iteration > self.op.opacity_reset_interval else None
+                        )
+                        self.gaussians.densify_and_prune(
+                            self.op.densify_grad_threshold,
+                            0.005,
+                            self.scene.cameras_extent,
+                            size_threshold,
+                        )
+
+                    if iteration % self.op.opacity_reset_interval == 0 or (
+                        self.lp.white_background
+                        and iteration == self.op.densify_from_iter
+                    ):
                         self.gaussians.reset_opacity()
 
                 # Optimizer step
                 if iteration < self.op.iterations:
                     self.gaussians.optimizer.step()
-                    self.gaussians.optimizer.zero_grad(set_to_none = True)
+                    self.gaussians.optimizer.zero_grad(set_to_none=True)
 
-                if (iteration in self.checkpoint_iterations):
+                if iteration in self.checkpoint_iterations:
                     print("\n[ITER {}] Saving Checkpoint".format(iteration))
-                    torch.save((self.gaussians.capture(), iteration), self.scene.model_path + "/chkpnt" + str(iteration) + ".pth")
+                    torch.save(
+                        (self.gaussians.capture(), iteration),
+                        self.scene.model_path + "/chkpnt" + str(iteration) + ".pth",
+                    )
         return True
