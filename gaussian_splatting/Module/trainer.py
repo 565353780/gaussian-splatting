@@ -40,8 +40,10 @@ class Trainer(object):
         self.port = train_config["port"]
 
         self.detect_anomaly = train_config["detect_anomaly"]
-        self.test_iterations = train_config["test_iterations"]
-        self.save_iterations = train_config["save_iterations"]
+        self.save_iterations = [i * 2500 for i in range(int(self.iterations / 2500))]
+        if self.iterations not in self.save_iterations:
+            self.save_iterations.append(self.iterations)
+        self.test_iterations = self.save_iterations
         self.checkpoint_iterations = train_config["checkpoint_iterations"]
         self.quiet = train_config["quiet"]
         self.start_checkpoint = train_config["start_checkpoint"]

@@ -9,8 +9,6 @@ TRAIN_CONFIG = {
     "device": "cuda",
     "percent_dense": 0.01,
     "detect_anomaly": False,
-    "test_iterations": [7000, 30000, 40000],
-    "save_iterations": [7000, 30000, 40000],
     "checkpoint_iterations": [],
     "quiet": False,
 }
