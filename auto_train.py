@@ -7,9 +7,14 @@ from colmap_manage.Module.colmap_manager import COLMAPManager
 from colmap_manage.Module.dataset_manager import DatasetManager
 from gaussian_splatting.Module.trainer import Trainer
 
-data_folder_name = "NeRF/3vjia_simple"
-data_folder_name = "NeRF/wine"
-# data_folder_name = "UrbanScene3D/PolyTech_fine_zhang"
+data_folder_name_dict = {
+    "0": "NeRF/3vjia_simple",
+    "1": "NeRF/wine",
+    "2": "NeRF/cup_1",
+    "3": "UrbanScene3D/PolyTech_fine_zhang",
+}
+
+data_folder_name = data_folder_name_dict["2"]
 video_file_path = "/home/chli/chLi/Dataset/Video/wine.mp41"
 down_sample_scale = 4
 resolution = 1
@@ -31,7 +36,7 @@ output_folder_path = (
 )
 image_folder_name = "images"
 device = "cuda"
-iterations = 300000
+iterations = 400000
 port = 6007
 percentent_dense = 0.01
 

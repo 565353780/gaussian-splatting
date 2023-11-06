@@ -67,6 +67,7 @@ class Trainer(object):
 
         self.op = OptimizationParams()
         self.op.percent_dense = self.percent_dense
+        self.op.iterations = self.iterations
 
         self.pp = PipelineParams()
 
