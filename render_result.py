@@ -3,6 +3,7 @@ import sys
 sys.path.append("../camera-manage/")
 
 from gaussian_splatting.Method.render import renderGSResult
+from gaussian_splatting.Method.time import getLatestFolderName
 
 data_folder_name_dict = {
     "0": "NeRF/3vjia_simple",
@@ -11,11 +12,12 @@ data_folder_name_dict = {
     "3": "UrbanScene3D/PolyTech_fine_zhang",
 }
 
-data_folder_name = data_folder_name_dict["2"]
-
-output_folder_path = (
-    "../gaussian-splatting/output/" + data_folder_name.replace("/", "_") + "/"
+data_folder_name = data_folder_name_dict["2"].replace("/", "_")
+data_folder_name = getLatestFolderName(
+    data_folder_name, "../gaussian-splatting/output/"
 )
+
+output_folder_path = "../gaussian-splatting/output/" + data_folder_name + "/"
 iteration = None
 
 renderGSResult(output_folder_path, iteration)
