@@ -10,41 +10,38 @@ from gaussian_splatting.Method.path import searchForMaxIteration
 from gaussian_splatting.Method.camera import cameraList_from_camInfos, camera_to_JSON
 
 
-class Scene:
-    gaussians: GaussianModel
-
+class Scene(object):
     def __init__(
         self,
-        args: ModelParams,
+        lp: ModelParams,
         gaussians: GaussianModel,
         load_iteration=None,
     ):
         """b
         :param path: Path to colmap scene main folder.
         """
-        self.model_path = args.model_path
+        self.model_path = lp.model_path
         self.loaded_iter = None
         self.gaussians = gaussians
-
-        if load_iteration:
-            if load_iteration == -1:
-                self.loaded_iter = searchForMaxIteration(
-                    os.path.join(self.model_path, "point_cloud")
-                )
-            else:
-                self.loaded_iter = load_iteration
-            print("Loading trained model at iteration {}".format(self.loaded_iter))
 
         self.train_cameras = {}
         self.test_cameras = {}
 
-        if not os.path.exists(args.source_path + "sparse/"):
+        self.point_cloud = None
+
+        self.loadColmapDataset(lp)
+
+        self.loadTrainedModel(load_iteration)
+        return
+
+    def loadColmapDataset(self, lp):
+        if not os.path.exists(lp.source_path + "sparse/"):
             print("[ERROR][scene::__init__]")
             print("\t dataset not exist!")
-            print("\t source_path:", args.source_path + "sparse/")
+            print("\t source_path:", lp.source_path + "sparse/")
             exit()
 
-        scene_info = readColmapSceneInfo(args.source_path, args.images, args.eval)
+        scene_info = readColmapSceneInfo(lp.source_path, lp.images, lp.eval)
 
         if not self.loaded_iter:
             with open(scene_info.ply_path, "rb") as src_file, open(
@@ -71,12 +68,25 @@ class Scene:
 
         print("Loading Training Cameras")
         self.train_cameras[1.0] = cameraList_from_camInfos(
-            scene_info.train_cameras, 1.0, args
+            scene_info.train_cameras, 1.0, lp
         )
         print("Loading Test Cameras")
         self.test_cameras[1.0] = cameraList_from_camInfos(
-            scene_info.test_cameras, 1.0, args
+            scene_info.test_cameras, 1.0, lp
         )
+
+        self.point_cloud = scene_info.point_cloud
+        return True
+
+    def loadTrainedModel(self, load_iteration):
+        if load_iteration:
+            if load_iteration == -1:
+                self.loaded_iter = searchForMaxIteration(
+                    os.path.join(self.model_path, "point_cloud")
+                )
+            else:
+                self.loaded_iter = load_iteration
+            print("Loading trained model at iteration {}".format(self.loaded_iter))
 
         if self.loaded_iter:
             self.gaussians.load_ply(
@@ -88,8 +98,8 @@ class Scene:
                 )
             )
         else:
-            self.gaussians.create_from_pcd(scene_info.point_cloud, self.cameras_extent)
-        return
+            self.gaussians.create_from_pcd(self.point_cloud, self.cameras_extent)
+        return True
 
     def save(self, iteration):
         point_cloud_path = os.path.join(

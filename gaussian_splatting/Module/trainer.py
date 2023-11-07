@@ -6,7 +6,6 @@ import torch
 from gaussian_splatting.Config.params import (
     ModelParams,
     OptimizationParams,
-    PipelineParams,
 )
 from gaussian_splatting.Config.train import getTrainConfig
 from gaussian_splatting.Data.scene import Scene
@@ -71,8 +70,6 @@ class Trainer(object):
         self.op.percent_dense = self.percent_dense
         self.op.iterations = self.iterations
 
-        self.pp = PipelineParams()
-
         # Model
         self.gaussians = GaussianModel(self.lp.sh_degree)
         self.first_iter = 0
@@ -106,8 +103,6 @@ class Trainer(object):
                 (
                     custom_cam,
                     do_training,
-                    self.pp.convert_SHs_python,
-                    self.pp.compute_cov3D_python,
                     keep_alive,
                     scaling_modifer,
                 ) = network_gui.receive()
@@ -115,7 +110,6 @@ class Trainer(object):
                     net_image = render(
                         custom_cam,
                         self.gaussians,
-                        self.pp,
                         self.background,
                         scaling_modifer,
                     )["render"]
@@ -153,7 +147,7 @@ class Trainer(object):
 
     def trainStep(self, viewpoint_cam):
         # Render
-        render_pkg = render(viewpoint_cam, self.gaussians, self.pp, self.background)
+        render_pkg = render(viewpoint_cam, self.gaussians, self.background)
         image = render_pkg["render"]
 
         # Loss
@@ -226,7 +220,7 @@ class Trainer(object):
                     self.test_iterations,
                     self.scene,
                     render,
-                    (self.pp, self.background),
+                    self.background,
                 )
                 if iteration in self.save_iterations:
                     print("\n[ITER {}] Saving gaussians".format(iteration))

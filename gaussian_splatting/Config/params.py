@@ -2,10 +2,12 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 
+
 class GroupParams:
     pass
 
-class ModelParams(object): 
+
+class ModelParams(object):
     def __init__(self):
         self.sh_degree = 3
         self.source_path = ""
@@ -16,11 +18,6 @@ class ModelParams(object):
         self.data_device = "cuda"
         self.eval = False
 
-class PipelineParams(object):
-    def __init__(self):
-        self.convert_SHs_python = False
-        self.compute_cov3D_python = False
-        self.debug = False
 
 class OptimizationParams(object):
     def __init__(self):
@@ -41,7 +38,8 @@ class OptimizationParams(object):
         self.densify_until_iter = 15_000
         self.densify_grad_threshold = 0.0002
 
-def get_combined_args(parser : ArgumentParser):
+
+def get_combined_args(parser: ArgumentParser):
     cmdlne_string = sys.argv[1:]
     cfgfile_string = "Namespace()"
     args_cmdline = parser.parse_args(cmdlne_string)
@@ -58,7 +56,7 @@ def get_combined_args(parser : ArgumentParser):
     args_cfgfile = eval(cfgfile_string)
 
     merged_dict = vars(args_cfgfile).copy()
-    for k,v in vars(args_cmdline).items():
+    for k, v in vars(args_cmdline).items():
         if v != None:
             merged_dict[k] = v
     return Namespace(**merged_dict)
