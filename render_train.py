@@ -12,14 +12,12 @@ data_folder_name_dict = {
     "3": "UrbanScene3D/PolyTech_fine_zhang",
 }
 
-data_folder_name = data_folder_name_dict["2"]
+data_folder_name = data_folder_name_dict["2"].replace("/", "_")
 data_folder_name = getLatestFolderName(
     data_folder_name, "../gaussian-splatting/output/"
 )
 
-output_folder_path = (
-    "../gaussian-splatting/output/" + data_folder_name.replace("/", "_") + "/"
-)
+output_folder_path = "../gaussian-splatting/output/" + data_folder_name + "/"
 port = 6007
 
 renderTrainGS(output_folder_path, port)
