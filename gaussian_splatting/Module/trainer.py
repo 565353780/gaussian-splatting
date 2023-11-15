@@ -187,7 +187,7 @@ class Trainer(object):
 
             # Pick a random Camera
             if not viewpoint_stack:
-                viewpoint_stack = self.scene.getTrainCameras().copy()
+                viewpoint_stack = self.scene.getCameras().copy()
             viewpoint_cam = viewpoint_stack.pop(randint(0, len(viewpoint_stack) - 1))
 
             Ll1, loss, render_pkg = self.trainStep(viewpoint_cam)

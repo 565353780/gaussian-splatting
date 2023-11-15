@@ -48,11 +48,11 @@ def training_report(
     if iteration in testing_iterations:
         torch.cuda.empty_cache()
         validation_configs = (
-            {"name": "test", "cameras": scene.getTestCameras()},
+            {"name": "test", "cameras": scene.getCameras()},
             {
                 "name": "train",
                 "cameras": [
-                    scene.getTrainCameras()[idx % len(scene.getTrainCameras())]
+                    scene.getCameras()[idx % len(scene.getCameras())]
                     for idx in range(5, 30, 5)
                 ],
             },
