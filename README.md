@@ -3,7 +3,7 @@
 ## Requirements
 
 ```bash
-gcc-11 & g++-11
+gcc-12 & g++-12
 cuda-11.8
 ```
 

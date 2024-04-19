@@ -12,10 +12,13 @@ data_folder_name_dict = {
     "1": "NeRF/wine",
     "2": "NeRF/cup_1",
     "3": "UrbanScene3D/PolyTech_fine_zhang",
+    "4": "NeRF/jfguo-virtual-1-images",
+    "5": "NeRF/jfguo-real-1-images",
 }
 
-data_folder_name = data_folder_name_dict["2"]
+data_folder_name = data_folder_name_dict["5"]
 video_file_path = "/home/chli/chLi/Dataset/Video/wine.mp41"
+video_file_path = None
 down_sample_scale = 4
 resolution = 1
 
@@ -35,7 +38,6 @@ output_folder_path = (
     "../gaussian-splatting/output/" + data_folder_name.replace("/", "_") + "/"
 )
 image_folder_name = "images"
-device = "cuda"
 iterations = 400000
 port = 6007
 percentent_dense = 0.01

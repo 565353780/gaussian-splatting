@@ -1,15 +1,20 @@
 cd ..
+git clone git@github.com:565353780/camera-manage.git
 git clone git@github.com:565353780/colmap-manage.git
 git clone git@github.com:565353780/udf-generate.git
 
-cd colmap-manage
+cd camera-manage
+./dev_setup.sh
+
+cd ../colmap-manage
 ./dev_setup.sh
 
 cd ../udf-generate
 ./dev_setup.sh
 
 sudo apt install -y libglew-dev libassimp-dev libboost-all-dev libgtk-3-dev libopencv-dev \
-	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev
+	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev \
+	libceres2
 sudo apt install imagemagick
 
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
