@@ -19,7 +19,7 @@ data_folder_name_dict = {
 data_folder_name = data_folder_name_dict["5"]
 video_file_path = "/home/chli/chLi/Dataset/Video/wine.mp41"
 video_file_path = None
-down_sample_scale = 4
+down_sample_scale = 1
 resolution = 1
 
 scale = 1
