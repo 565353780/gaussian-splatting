@@ -2,6 +2,7 @@ cd ..
 git clone https://github.com/565353780/camera-manage.git
 git clone https://github.com/565353780/colmap-manage.git
 git clone https://github.com/565353780/udf-generate.git
+git clone https://github.com/565353780/sibr-core.git
 
 cd camera-manage
 ./setup.sh
@@ -12,20 +13,15 @@ cd ../colmap-manage
 cd ../udf-generate
 ./setup.sh
 
-sudo apt install -y libglew-dev libassimp-dev libboost-all-dev libgtk-3-dev libopencv-dev \
-	libglfw3-dev libavdevice-dev libavcodec-dev libeigen3-dev libxxf86vm-dev libembree-dev \
-	libceres2
-sudo apt install imagemagick
+cd ../sibr-core
+./setup.sh
+
+sudo apt install libceres2 imagemagick -y
 
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install tqdm plyfile tensorboard
 
-cd ../gaussian-splatting/gaussian_splatting/Lib/sibr_core
-rm -rf build
-cmake -Bbuild . -DCMAKE_BUILD_TYPE=Release -G Ninja
-cmake --build build -j --target install
-
-cd ../diff-gaussian-rasterization
+cd ../gaussian-splatting/gaussian_splatting/Lib/diff-gaussian-rasterization
 pip install -e .
 
 cd ../simple-knn
