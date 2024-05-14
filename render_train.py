@@ -12,9 +12,11 @@ data_folder_name_dict = {
     "3": "UrbanScene3D/PolyTech_fine_zhang",
     "4": "NeRF/jfguo-virtual-1-images",
     "5": "NeRF/jfguo-real-1-images",
+    "6": "NeRF/real_fridge_raw-train",
+    "7": "NeRF/hotdog_train",
 }
 
-data_folder_name = data_folder_name_dict["5"].replace("/", "_")
+data_folder_name = data_folder_name_dict["7"].replace("/", "_")
 data_folder_name = getLatestFolderName(
     data_folder_name, "../gaussian-splatting/output/"
 )

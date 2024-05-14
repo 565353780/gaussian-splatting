@@ -14,9 +14,11 @@ data_folder_name_dict = {
     "3": "UrbanScene3D/PolyTech_fine_zhang",
     "4": "NeRF/jfguo-virtual-1-images",
     "5": "NeRF/jfguo-real-1-images",
+    "6": "NeRF/real_fridge_raw-train",
+    "7": "NeRF/hotdog_train",
 }
 
-data_folder_name = data_folder_name_dict["5"]
+data_folder_name = data_folder_name_dict["7"]
 video_file_path = "/home/chli/chLi/Dataset/Video/wine.mp41"
 video_file_path = None
 down_sample_scale = 1
