@@ -7,6 +7,8 @@ from colmap_manage.Module.colmap_manager import COLMAPManager
 from colmap_manage.Module.dataset_manager import DatasetManager
 from gaussian_splatting.Module.trainer import Trainer
 
+nerf_list = ['chair', 'hotdog', 'mic', 'ship']
+nerf = nerf_list[3]
 data_folder_name_dict = {
     "0": "NeRF/3vjia_simple",
     "1": "NeRF/wine",
@@ -15,7 +17,7 @@ data_folder_name_dict = {
     "4": "NeRF/jfguo-virtual-1-images",
     "5": "NeRF/jfguo-real-1-images",
     "6": "NeRF/real_fridge_raw-train",
-    "7": "NeRF/hotdog_train",
+    "7": "NeRF/" + nerf + "_train",
 }
 
 data_folder_name = data_folder_name_dict["7"]
