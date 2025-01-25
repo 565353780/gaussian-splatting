@@ -14,8 +14,8 @@ cd ../sibr-core
 
 sudo apt install libceres2 imagemagick -y
 
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install tqdm plyfile tensorboard
+pip install -U torch torchvision torchaudio
+pip install -U tqdm plyfile tensorboard
 
 cd ../gaussian-splatting/gaussian_splatting/Lib/diff-gaussian-rasterization
 pip install -e .

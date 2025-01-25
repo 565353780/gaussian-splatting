@@ -5,7 +5,7 @@ sys.path.append("../colmap-manage/")
 from colmap_manage.Module.colmap_manager import COLMAPManager
 from colmap_manage.Module.dataset_manager import DatasetManager
 
-data_folder_path = "/home/chli/chLi/Dataset/NeRF/3vjia_simple/"
+data_folder_path = "/home/chli/chLi/Dataset/TARTAN/test1/"
 video_file_path = "None"
 down_sample_scale = 4
 
@@ -15,7 +15,7 @@ print_progress = True
 remove_old = False
 remain_db = True
 valid_percentage = 0.8
-dataset_folder_path = "../colmap-manage/output/3vjia_simple/"
+dataset_folder_path = "../colmap-manage/output/test1/"
 method_dict = {}
 is_copy = False
 
